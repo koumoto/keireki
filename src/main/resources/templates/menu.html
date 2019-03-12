@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>経歴書管理システム メニュー</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>メニュー</h1>
+
+	<span>社員番号: </span>
+	<p th:text="${sessionBean.employeeNo}"></p>
+	<br />
+	<span>ユーザー名: </span>
+	<p th:text="${sessionBean.loginUserName}"></p>
+	<br />
+</body>
+</html>
