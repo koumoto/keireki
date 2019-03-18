@@ -2,6 +2,8 @@ package jp.kpls.keireki.controller;
 
 import java.util.Objects;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +19,8 @@ import jp.kpls.keireki.mapper.LoginUserMapper;
 @RequestMapping("/")
 public class LoginController {
 
+	Log log = LogFactory.getLog(LoginController.class);
+
 	@Autowired
 	private LoginUserMapper loginUserMapper;
 
@@ -25,6 +29,7 @@ public class LoginController {
 
 	@RequestMapping("login")
 	private ModelAndView index(@ModelAttribute LoginUserFormBean form) {
+		log.info("ログイン処理開始");
 
 		ModelAndView mv = new ModelAndView();
 
@@ -53,6 +58,8 @@ public class LoginController {
 		sessionBean.setEmployeeNo(loginUser.getEmployeeNo());
 
 		mv.addObject("sessionBean", sessionBean);
+
+		log.info("ログイン処理終了");
 
 		return mv;
 	}

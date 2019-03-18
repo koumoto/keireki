@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class KeirekiApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(KeirekiApplication.class, args);
 	}
 
