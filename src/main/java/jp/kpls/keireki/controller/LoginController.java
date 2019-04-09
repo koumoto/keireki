@@ -2,6 +2,8 @@ package jp.kpls.keireki.controller;
 
 import java.util.Objects;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +21,14 @@ import jp.kpls.keireki.mapper.LoginUserMapper;
 @RequestMapping("/")
 public class LoginController {
 
-	Log log = LogFactory.getLog(LoginController.class);
+	/** log */
+	private Log log = LogFactory.getLog(LoginController.class);
 
 	@Autowired
 	private LoginUserMapper loginUserMapper;
 
 	@Autowired
-	private LoginUserSessionBean sessionBean;
+	HttpSession session;
 
 	@RequestMapping("login")
 	private ModelAndView index(@ModelAttribute LoginUserFormBean form) {
@@ -36,33 +39,60 @@ public class LoginController {
 		// ビュー名を設定
 		mv.setViewName("menu");
 
-		// DB挿入
-		LoginUser loginUser = loginUserMapper.selectByEmployeeNo(form.getEmployeeNo());
+		// セッションが設定されていないとき
+		if (session.getAttribute("sessionBean") == null) {
 
-		// ログインユーザ不取得時
-		if (loginUser == null) {
-			// エラーページに
-			mv.setViewName("login_error");
-			return mv;
+			// DB検索
+			LoginUser loginUser = loginUserMapper.selectByEmployeeNo(form.getEmployeeNo());
+
+			// ログインユーザ不取得時
+			if (loginUser == null) {
+				// エラーページに
+				mv.setViewName("login_error");
+				return mv;
+			}
+
+			// パスワード不一致時
+			if (!Objects.equals(form.getPassword(), loginUser.getPassword())) {
+				// エラーページに
+				mv.setViewName("login_error");
+				return mv;
+			}
+
+			// セッションBeanに追加
+			LoginUserSessionBean sessionBean = new LoginUserSessionBean();
+			sessionBean.setLoginUserName(loginUser.getUserName());
+			sessionBean.setEmployeeNo(loginUser.getEmployeeNo());
+
+			session.setAttribute("sessionBean", sessionBean);
+			//mv.addObject("sessionBean", sessionBean);
 		}
-
-		// パスワード不一致時
-		if (! Objects.equals(form.getPassword(), loginUser.getPassword())) {
-			// エラーページに
-			mv.setViewName("login_error");
-			return mv;
-		}
-
-		// セッションBeanに追加
-		sessionBean.setLoginUserName(loginUser.getUserName());
-		sessionBean.setEmployeeNo(loginUser.getEmployeeNo());
-
-		mv.addObject("sessionBean", sessionBean);
 
 		log.info("ログイン処理終了");
 
 		return mv;
 	}
 
+	@RequestMapping("menu")
+	private ModelAndView menu(@ModelAttribute LoginUserFormBean form) {
+		return index(form);
+	}
+
+	@RequestMapping("logout")
+	private ModelAndView logout() {
+		log.info("ログアウト処理開始");
+
+		ModelAndView mv = new ModelAndView();
+
+		// ビュー名を設定
+		mv.setViewName("logout");
+
+		// セッション情報をクリア
+		session.invalidate();
+
+		log.info("ログアウト処理終了");
+
+		return mv;
+	}
 
 }

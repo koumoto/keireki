@@ -8,10 +8,12 @@
 	<h1>メニュー</h1>
 
 	<span>社員番号: </span>
-	<p th:text="${sessionBean.employeeNo}"></p>
+	<p th:text="${session.sessionBean.employeeNo}"></p>
 	<br />
 	<span>ユーザー名: </span>
-	<p th:text="${sessionBean.loginUserName}"></p>
+	<p th:text="${session.sessionBean.loginUserName}"></p>
 	<br />
+
+	<a href="/logout">ログアウト</a>
 </body>
 </html>
